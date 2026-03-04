@@ -32,7 +32,6 @@ import {
   LogOut,
   Edit3,
 } from "lucide-react";
-import { uploadImage } from "@/src/lib/cloudinary";
 
 // ─── Isolated sub-components (defined outside main component to avoid remounting) ─────
 
@@ -162,30 +161,12 @@ export function RegistrationPage() {
     major: majors[0]?.name || "",
     level: levels[0]?.name || "",
     gameId: "",
-    avatarUrl: "",
   });
 
   const selectedGame = games.find(g => g.id === formData.gameId);
   const activeBgGame = hoveredGame || selectedGame;
 
-  const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setIsUploading(true);
-    try {
-      const url = await uploadImage(file);
-      setFormData((prev) => ({ ...prev, avatarUrl: url }));
-      addToast("Image téléchargée !", "success");
-    } catch (err: any) {
-      addToast("Erreur lors de l'upload: " + err.message, "error");
-    } finally {
-      setIsUploading(false);
-    }
-  };
 
   const playerMatches = registeredPlayerId
     ? matches.filter(m => m.player1Id === registeredPlayerId || m.player2Id === registeredPlayerId)
@@ -222,7 +203,6 @@ export function RegistrationPage() {
         major: p.major,
         level: p.level,
         gameId: p.gameId,
-        avatarUrl: p.avatarUrl || "",
       });
       setRegisteredPlayerId(p.id);
       setIsEditing(true);
@@ -245,22 +225,18 @@ export function RegistrationPage() {
         await updatePlayer(registeredPlayerId, {
           gameId: formData.gameId,
           pseudo: formData.pseudo,
-          avatarUrl: formData.avatarUrl,
         });
         addToast("Inscription modifiée avec succès !", "success");
         setIsEditing(false);
       } else {
         const result = await registerPlayer({
           ...formData,
-          avatarUrl:
-            formData.avatarUrl ||
-            `https://api.dicebear.com/7.x/avataaars/svg?seed=${formData.pseudo || formData.firstName}`,
         } as any);
         setRegisteredPlayerId(result.id);
         setIsRegistered(true);
         setIsEditing(true);
 
-        addToast("Inscription réussie ! Un email de confirmation a été envoyé.", "success");
+        addToast("Inscription réussie ! Veuillez noter votre identifiant.", "success");
       }
     } catch (err: any) {
       addToast("Erreur: " + err.message, "error");
@@ -570,7 +546,7 @@ export function RegistrationPage() {
                           onClick={() => {
                             openModal({
                               title: "Modifier mon inscription",
-                              description: "Entrez votre identifiant unique reçu par mail pour retrouver vos informations.",
+                              description: "Entrez votre identifiant unique pour retrouver vos informations.",
                               inputType: "text",
                               confirmText: "Rechercher",
                               onConfirm: (id) => {
@@ -585,7 +561,6 @@ export function RegistrationPage() {
                                     major: p.major,
                                     level: p.level,
                                     gameId: p.gameId,
-                                    avatarUrl: p.avatarUrl || "",
                                   });
                                   setRegisteredPlayerId(p.id);
                                   setIsEditing(true);
@@ -634,44 +609,6 @@ export function RegistrationPage() {
                           </div>
                         </div>
                         <div className="grid gap-5 sm:grid-cols-2">
-                          <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-zinc-800 rounded-2xl bg-zinc-900/40 hover:border-violet-500/50 transition-colors group relative overflow-hidden">
-                            {formData.avatarUrl || isUploading ? (
-                              <div className="relative h-24 w-24 rounded-full overflow-hidden ring-4 ring-violet-500/20">
-                                {isUploading ? (
-                                  <div className="absolute inset-0 bg-zinc-950/80 flex items-center justify-center">
-                                    <Loader2 className="h-8 w-8 text-violet-500 animate-spin" />
-                                  </div>
-                                ) : (
-                                  <img src={formData.avatarUrl} alt="Preview" className="h-full w-full object-cover" />
-                                )}
-                                <button
-                                  type="button"
-                                  onClick={() => fileInputRef.current?.click()}
-                                  className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                                >
-                                  <Camera className="h-6 w-6 text-white" />
-                                </button>
-                              </div>
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={() => fileInputRef.current?.click()}
-                                className="flex flex-col items-center gap-3"
-                              >
-                                <div className="h-16 w-16 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-violet-500/20 group-hover:text-violet-400 transition-all">
-                                  <Upload className="h-6 w-6" />
-                                </div>
-                                <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Photo (Optionnel)</span>
-                              </button>
-                            )}
-                            <input
-                              type="file"
-                              ref={fileInputRef}
-                              onChange={handleImageUpload}
-                              className="hidden"
-                              accept="image/*"
-                            />
-                          </div>
                           <div className="space-y-6">
                             <div>
                               <label className={labelCls}>Adresse Mail *</label>

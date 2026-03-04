@@ -16,22 +16,10 @@ export function Layout() {
 
   const navItems = [
     { name: "Inscription", path: "/", icon: Gamepad2 },
-    { name: "Matchs", path: "/matches", icon: CalendarDays },
   ];
 
   const handleLogoClick = () => {
-    const now = Date.now();
-    if (now - lastClickTime.current > 2000) {
-      logoClicks.current = 1;
-    } else {
-      logoClicks.current += 1;
-    }
-    lastClickTime.current = now;
-
-    if (logoClicks.current >= 3) {
-      setIsModalOpen(true);
-      logoClicks.current = 0;
-    }
+    // Admin access disabled
   };
 
   return (
