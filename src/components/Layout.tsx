@@ -19,7 +19,18 @@ export function Layout() {
   ];
 
   const handleLogoClick = () => {
-    // Admin access disabled
+    const now = Date.now();
+    if (now - lastClickTime.current > 2000) {
+      logoClicks.current = 1;
+    } else {
+      logoClicks.current += 1;
+    }
+    lastClickTime.current = now;
+
+    if (logoClicks.current >= 3) {
+      setIsModalOpen(true);
+      logoClicks.current = 0;
+    }
   };
 
   return (
