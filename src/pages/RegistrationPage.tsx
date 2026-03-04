@@ -168,15 +168,6 @@ export function RegistrationPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const playerMatches = registeredPlayerId
-    ? matches.filter(m => m.player1Id === registeredPlayerId || m.player2Id === registeredPlayerId)
-    : [];
-
-  const stats = {
-    total: playerMatches.length,
-    wins: playerMatches.filter(m => m.winnerId === registeredPlayerId).length,
-    losses: playerMatches.filter(m => m.status === 'finished' && m.winnerId && m.winnerId !== registeredPlayerId).length
-  };
 
   // Scroll-based parallax for hero
   const heroRef = useRef(null);
@@ -669,20 +660,6 @@ export function RegistrationPage() {
                     {/* 2. Edit Mode: Stats & Read-only info */}
                     {isEditing && (
                       <div className="space-y-6">
-                        <div className="grid grid-cols-3 gap-4 mb-6">
-                          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 text-center">
-                            <p className="text-[10px] font-bold text-zinc-500 uppercase mb-1">Matchs</p>
-                            <p className="text-xl font-black text-white">{stats.total}</p>
-                          </div>
-                          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-center">
-                            <p className="text-[10px] font-bold text-emerald-500/60 uppercase mb-1">Gagnés</p>
-                            <p className="text-xl font-black text-emerald-400">{stats.wins}</p>
-                          </div>
-                          <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-center">
-                            <p className="text-[10px] font-bold text-red-500/60 uppercase mb-1">Perdus</p>
-                            <p className="text-xl font-black text-red-400">{stats.losses}</p>
-                          </div>
-                        </div>
 
                         <div className="grid gap-5 sm:grid-cols-2">
                           <div className="flex items-center justify-between p-4 rounded-xl bg-zinc-900/50 border border-zinc-800">
